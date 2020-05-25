@@ -9,6 +9,10 @@ public class Snake : MonoBehaviour
     private float gridMoveTimer;
     private float gridMoveTimerMax;
     private LevelGrid levelGrid;
+    private int snakeBodySize;
+    private List<Vector2Int> snakeMovePositionList;
+    private List<SnakeBodyPart> snakeBodyPartList;
+
     public void Setup(LevelGrid lg)
     {
         this.levelGrid = lg;
@@ -24,6 +28,10 @@ public class Snake : MonoBehaviour
         //Snake can move 2 per second
         gridMoveTimerMax = .5f;
         gridMoveTimer = gridMoveTimerMax;
+
+        snakeMovePositionList = new List<Vector2Int>();
+        snakeBodyPartList = new List<SnakeBodyPart>();
+        snakeBodySize = 0;
 
     }
     private void Update()
@@ -66,16 +74,43 @@ public class Snake : MonoBehaviour
 
         if (gridMoveTimer >= gridMoveTimerMax)
         {
-            gridPosition += gridMoveDirection;
             gridMoveTimer -= gridMoveTimerMax;
 
+            snakeMovePositionList.Insert(0, gridPosition);
+
             //Move the snake
+            gridPosition += gridMoveDirection;
+       
+            bool snakeAteFood = levelGrid.TrySnakeEatFood(gridPosition);
+            if(snakeAteFood)
+            {
+                snakeBodySize += 1;
+                CreateSnakeBodyPart();
+            }
+
+            if (snakeMovePositionList.Count >= snakeBodySize + 1)
+            {
+                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
+            }
+
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
 
             //Face the snake
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirection) - 90);
-            
-            levelGrid.SnakeMoved(gridPosition);
+
+            UpdateSnakeBodyParts();
+
+        }
+    }
+    private void CreateSnakeBodyPart()
+    {
+        snakeBodyPartList.Add(new SnakeBodyPart(snakeBodyPartList.Count));
+    }
+    private void UpdateSnakeBodyParts()
+    {
+        for (int i = 0; i < snakeMovePositionList.Count; i++)
+        {
+            snakeBodyPartList[i].SetGridPosition(snakeMovePositionList[i]);
         }
     }
     private float GetAngleFromVector(Vector2Int dir)
@@ -84,9 +119,30 @@ public class Snake : MonoBehaviour
         if (n < 0) n += 360;
         return n;
     }
-
-    public Vector2Int GetGridPosition()
+    public List<Vector2Int> GetFullSnakeGridPosition()
     {
-        return gridPosition;
+        List<Vector2Int> gridPosList = new List<Vector2Int>() { gridPosition };
+        gridPosList.AddRange(snakeMovePositionList);
+        return gridPosList;
+    }
+
+    private class SnakeBodyPart
+    {
+        private Vector2Int gridPosition;
+        private Transform transform;
+
+        public SnakeBodyPart(int bodyIndex)
+        {
+            GameObject snakeBodyGameObject = new GameObject("SnakeBody", typeof(SpriteRenderer));
+            snakeBodyGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.instance.snakeBodyprite;
+            snakeBodyGameObject.GetComponent<SpriteRenderer>().sortingOrder = -bodyIndex;
+            transform = snakeBodyGameObject.transform;
+        }
+
+        public void SetGridPosition(Vector2Int gridPosition)
+        {
+            this.gridPosition = gridPosition;
+            transform.position = new Vector3(gridPosition.x, gridPosition.y);
+        }
     }
 }

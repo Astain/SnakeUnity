@@ -12,7 +12,7 @@ public class GameAssets : MonoBehaviour
     }
 
     public Sprite snakeHeadSprite;
-
+    public Sprite snakeBodyprite;
     public Sprite foodSprite;
 
 }
