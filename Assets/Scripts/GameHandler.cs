@@ -7,6 +7,15 @@ public class GameHandler : MonoBehaviour
     [SerializeField]
     private Snake snake;
     private LevelGrid levelGrid;
+
+    private static GameHandler instance;
+
+    private static int score;
+    private void Awake()
+    {
+        instance = this;
+        score = 0;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -18,9 +27,13 @@ public class GameHandler : MonoBehaviour
         levelGrid.Setup(snake);
     }
 
-    // Update is called once per frame
-    void Update()
+    public static int GetScore()
     {
-        
+        return score;
+    }
+
+    public static void AddScore()
+    {
+        score += 100;
     }
 }
