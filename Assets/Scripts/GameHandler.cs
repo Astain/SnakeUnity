@@ -26,7 +26,13 @@ public class GameHandler : MonoBehaviour
         snake.Setup(levelGrid);
         levelGrid.Setup(snake);
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseGame();
+        }
+    }
     public static int GetScore()
     {
         return score;
@@ -35,6 +41,18 @@ public class GameHandler : MonoBehaviour
     public static void AddScore()
     {
         score += 100;
+    }
+    public static void PauseGame()
+    {
+        PauseWindow.ShowStatic();
+        //"Stop" the time
+        Time.timeScale = 0f;
+    }
+    public static void ResumeGame()
+    {
+        PauseWindow.HideStatic();
+        //Resume the timescale to 1
+        Time.timeScale = 1f;
     }
     public static void SnakeDied()
     {
