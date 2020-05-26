@@ -48,4 +48,10 @@ public class LevelGrid
         }
         return false;
     }
+    public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
+    {
+        gridPosition.x = (gridPosition.x + width) % width;
+        gridPosition.y = (gridPosition.y + height) % height;
+        return gridPosition;
+    }
 }
