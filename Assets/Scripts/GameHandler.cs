@@ -36,4 +36,8 @@ public class GameHandler : MonoBehaviour
     {
         score += 100;
     }
+    public static void SnakeDied()
+    {
+        GameOverWindow.ShowStatic();
+    }
 }

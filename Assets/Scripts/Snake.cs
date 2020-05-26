@@ -141,6 +141,7 @@ public class Snake : MonoBehaviour
                 if (gridPosition == snakeBodyPartGridPos)
                 {
                     state = State.Dead;
+                    GameHandler.SnakeDied();
                 }
             }
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
